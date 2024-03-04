@@ -38,4 +38,4 @@ The email should start with a greeting, don't be robotic, I am selling lead gene
 
 ### NOTE: Every time you reorder rows, delete a row, or refresh/reopen the spreadsheet the cells will rerun. Ensure that you crtl+c then crtl+shit+v to just paste the content of the cells without the formulas once they are done.
 
-Here's a link to an example spreadhseet you can use: https://docs.google.com/spreadsheets/d/1mGNvG-PXau_HDDUIhUJe0kngPsxQQTnRr7O5KLZcDp0/edit#gid=1319185277
+Here's a link to an example spreadsheet you can copy and use yourself : https://docs.google.com/spreadsheets/d/1mGNvG-PXau_HDDUIhUJe0kngPsxQQTnRr7O5KLZcDp0
