@@ -1,6 +1,6 @@
 These are scripts I use in my Google sheet in order to enrich lead information and craft custom emails using GPT.
 
-To use it:
+### Usage
 - Open a Google Sheets
 - Open Extensions
 - Go to Apps Script
@@ -9,21 +9,20 @@ To use it:
 - Save
 - Run and authorize for access to external scripts (needed for grabbing websites
 
-There are 4 added functions
+### There are 4 added functions
 
 `=WebSEO(D2)`
-
 Doesn't use GPT.
 
 `=UrlDescription(D2)`
-
 Uses GPT.
 
 `=GoogleEmail(C2,D2)`
-
 Uses GPT. Often gets rate limited by Google, doesn't work to drag and drop for hundreds of rows. I've added exponential backoff, but cells have a 30 second time limit and end up ERRORing. 
 
-Super basic template, you'll see you need to be very specific with your instructions (ex. just write the email, no signature), provide a template, describe your company and offer, etc.
+`=GPT("prompt", "optional-model")`
+
+Here's a super basic template, you'll see you need to be very specific with your instructions (ex. just write the email, no signature), provide a template, describe your company and offer, etc.
 
 `=GPT(""Write me a customized email using this info: 
 Name:"" & A2 & 
