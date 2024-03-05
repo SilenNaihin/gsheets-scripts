@@ -9,6 +9,10 @@ These are scripts I use in my Google sheet in order to enrich lead information a
 - Save
 - Run and authorize for access to external scripts (needed for grabbing websites
 
+### NOTE: Every time you reorder rows, delete a row, or refresh/reopen the spreadsheet the cells will rerun. Ensure that you crtl+c then crtl+shit+v to just paste the content of the cells without the formulas once they are done.
+
+Here's a link to an example spreadsheet you can copy and use yourself : https://docs.google.com/spreadsheets/d/1mGNvG-PXau_HDDUIhUJe0kngPsxQQTnRr7O5KLZcDp0
+
 ### There are 4 added functions
 
 `=WebSEO(D2)`
@@ -38,7 +42,3 @@ Company overview description:"" & P2 &
 Person description:"" & Q2 &
 ""
 The email should start with a greeting, don't be robotic, I am selling lead generation, offer is industry grade magnets. Be short and concise."", ""gpt-4"")`
-
-### NOTE: Every time you reorder rows, delete a row, or refresh/reopen the spreadsheet the cells will rerun. Ensure that you crtl+c then crtl+shit+v to just paste the content of the cells without the formulas once they are done.
-
-Here's a link to an example spreadsheet you can copy and use yourself : https://docs.google.com/spreadsheets/d/1mGNvG-PXau_HDDUIhUJe0kngPsxQQTnRr7O5KLZcDp0
