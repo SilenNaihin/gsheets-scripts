@@ -1,0 +1,38 @@
+<!-- not currently working -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <form id="batchForm">
+      Start Row: <input type="number" id="startRow" name="startRow"><br>
+      End Row: <input type="number" id="endRow" name="endRow"><br>
+      Input Column: <input type="text" id="inCol" name="inCol" maxlength="2"><br>
+      Output Column: <input type="text" id="outCol" name="outCol" maxlength="2"><br>
+      <button type="button" onclick="processData()">Start Processing</button>
+    </form>
+    <script>
+      function processData() {
+        var startRow = document.getElementById('startRow').value;
+        var endRow = document.getElementById('endRow').value;
+        var inCol = document.getElementById('inCol').value;
+        var outCol = document.getElementById('outCol').value;
+
+        // Logging to check if inputs are captured correctly
+        console.log(startRow, endRow, inCol, outCol);
+
+        google.script.run
+          .withSuccessHandler(function() {
+              google.script.host.close(); // Close the dialog upon successful execution
+          })
+          .withFailureHandler(function(error) {
+              alert('Failed to process data: ' + error.message);
+              console.error(error);
+          })
+          .startProcessing(parseInt(startRow), parseInt(endRow), inCol.toUpperCase(), outCol.toUpperCase());
+      }
+    </script>
+  </body>
+</html>
