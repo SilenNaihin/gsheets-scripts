@@ -50,7 +50,24 @@ Person description:"" & Q2 &
 The email should start with a greeting, don't be robotic, I am selling lead generation, offer is industry grade magnets. Be short and concise."", ""gpt-4"")`
 
 
-``
+Now let's you're preparing 4000 emails with AI to send in Google Sheets. This will literally take days of time dragging the formula down, waiting for it to run, fixing any errors with cell timeouts or waiting for token limits to refresh. Trust me, I've spent days doing it. On the other side, Clay.com costs an insane amount of money, and doesn't even allow you to run code natively. You need to set up a Lambda function and call it through HTTP or a webhook. 
 
-In order to work around the limit, 
-`Dialog.html` and `Menu.js` are not working in their current form, so the command parameters needs to be updated in the 
+Crazy thing is - Google Sheets allows you to execute long running code without needing wifi to run and bypassing all of the issues with the above. I've run these functions for 24+ hours automatically, perfectly. No cell limits. No timeouts. No token issues. No need to refresh. No costs outside of tokens. 
+ 
+`Dialog.html` and `Menu.js` are not working in their current form, so the command parameters need to be updated in the function itself, and the function needs to be run manually from the Apps Script (select the `startGPTProcessing` function at the top of the .gs file and click run).
+
+```javascript
+/**
+ * Initializes the batch processing and sets up a trigger to continue processing.
+ * @param {number} startRowAzure The starting row number for processing.
+ * @param {number} endRowAzure The ending row number for processing.
+ * @param {string} inColAzure The column letter where the prompts are.
+ * @param {string} outColAzure The column letter where the results should be written.
+ */
+function startGPTProcessing(startRowAzure=2, endRowAzure=4000, inColAzure="Y2", outColAzure="Z2") {
+```
+
+This exists for UrlDescription, GoogleName, and GPT functions. It can quite easily be set up for anything else that needs to be run for a while.
+- `batchSize` is manually set, the main constraint is that every batch has to complete in under 6 minutes. Don't forget that exponential backoff with the token limits can be a factor.
+- The only reason I have time added between triggers is so that the token limits have time to refresh.
+- You can parallel process these different long running functions if token limits allow.
