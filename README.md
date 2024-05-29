@@ -49,24 +49,29 @@ The email should start with a greeting, don't be robotic, I am selling lead gene
 
 #### NOTE: If you're running these formulas in cells raw, every time you reorder rows, delete a row, or refresh/reopen the spreadsheet the cells will rerun if it is a cell you ran a formula in. This can be costly. Ensure that you crtl+c then crtl+shit+v to just paste the content of the cells without the formulas once they are done.
 
-Now lets say you're preparing 4000 emails with AI to send in Google Sheets. This will literally take days of time dragging the formula down, waiting for it to run, fixing any errors with cell timeouts or waiting for token limits to refresh. Trust me, I've spent days doing it. On the other side, Clay.com costs an insane amount of money, and doesn't even allow you to run code natively. You need to set up a Lambda function and call it through HTTP or a webhook. 
+Now lets say you're preparing 4000 emails with AI to send in Google Sheets. This will literally take days of time dragging the formula down, waiting for it to run, fixing any errors with cell timeouts or waiting for token limits to refresh. Trust me, I've spent days doing it. On the other side, Clay.com costs an insane amount of money, and doesn't even allow you to run code natively. You need to set up a Lambda function and call it through HTTP or a webhook.
 
-Crazy thing is - Google Sheets allows you to execute long running code without needing wifi to run and bypassing all of the issues with the above. I've run these functions for 24+ hours automatically, perfectly. No cell limits. No timeouts. No token issues. No need to refresh. No costs outside of tokens. 
- 
-`Dialog.html` and `Menu.js` are not working in their current form, so the command parameters need to be updated in the function itself, and the function needs to be run manually from the Apps Script (select the `startGPTProcessing` function at the top of the .gs file and click run).
+Crazy thing is - Google Sheets allows you to execute long running code without needing wifi to run and bypassing all of the issues with the above. I've run these functions for 24+ hours automatically, perfectly. No cell limits. No timeouts. No token issues. No need to refresh. No costs outside of tokens.
+
+`Dialog.html` and `Menu.js` are not working in their current form, so the command parameters need to be updated in the function itself, and the function needs to be run manually from the Apps Script (select the `BatchRun` function at the top of the .gs file and click run).
 
 ```javascript
-/**
- * Initializes the batch processing and sets up a trigger to continue processing.
- * @param {number} startRowAzure The starting row number for processing.
- * @param {number} endRowAzure The ending row number for processing.
- * @param {string} inColAzure The column letter where the prompts are.
- * @param {string} outColAzure The column letter where the results should be written.
- */
-function startGPTProcessing(startRowAzure=2, endRowAzure=4000, inColAzure="Y2", outColAzure="Z2") {
+function BatchRun() {
+  /** 
+   Initializes the batch processing.
+   Options: 'BatchGPT' (in: string), 'BatchUrlDesc' (in: website), 'BatchGoogleName' (in: name, company name)
+   * @param {number} startRow The starting row number for processing.
+   * @param {number} endRow The ending row number for processing.
+   * @param {string} inCol The column letter where the prompts are.
+   * (BatchGoogleName only) @param {string} inCol2 The column letter where the prompts are.
+   * @param {string} outCol The column letter where the results should be written.
+  */
+  startProcessing('BatchGPT', 7, 12, 'Q', 'R');
+}
 ```
 
-This exists for UrlDescription, GoogleName, and GPT functions. It can quite easily be set up for anything else that needs to be run for a while.
+This exists for UrlDescription, GoogleName, and GPT functions. It can quite easily be set up for anything else that needs to be run for a while. More details:
+
 - `batchSize` is manually set, the main constraint is that every batch has to complete in under 6 minutes. Don't forget that exponential backoff with the token limits can be a factor.
 - The only reason I have time added between triggers is so that the token limits have time to refresh.
 - You can parallel process these different long running functions if token limits allow.
