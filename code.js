@@ -1,3 +1,16 @@
+function BatchRun() {
+  /** 
+   Initializes the batch processing.
+   Options: 'BatchGPT', 'BatchUrlDesc', 'BatchGoogleName'
+   * @param {number} startRow The starting row number for processing.
+   * @param {number} endRow The ending row number for processing.
+   * @param {string} inCol The column letter where the prompts are.
+   * (BatchGoogleName only) @param {string} inCol2 The column letter where the prompts are.
+   * @param {string} outCol The column letter where the results should be written.
+  */
+  startProcessing('BatchGPT', 7, 12, 'Q', 'R');
+}
+
 // Common function to handle API calls with exponential backoff
 function fetchWithExponentialBackoff(url, params) {
   const maxAttempts = 5;
@@ -240,5 +253,25 @@ Respond with nothing but a short single paragraph of 60 words about this person.
   }
 }
 
-// const response = GoogleName("Austin Jones", "DeAngelis Diamond")
-// console.log(response)
+function startProcessing(
+  batchFunction,
+  startRow,
+  endRow,
+  inCol,
+  outCol,
+  inCol2
+) {
+  switch (batchFunction) {
+    case 'BatchGPT':
+      startGPTProcessing(startRow, endRow, inCol, outCol);
+      break;
+    case 'BatchUrlDesc':
+      startUrlDescProcessing(startRow, endRow, inCol, outCol);
+      break;
+    case 'BatchGoogleName':
+      startGoogleNameProcessing(startRow, endRow, inCol, inCol2, outCol);
+      break;
+    default:
+      throw new Error('Invalid batch function selected');
+  }
+}
