@@ -3,7 +3,8 @@
 // Replace YOUR_API_KEY with your actual Azure OpenAI API key
 const AZURE_API_KEY = '';
 // Azure OpenAI endpoint for your specific deployment
-const AZURE_ENDPOINT = 'https://google-sheets.openai.azure.com/openai/deployments/';
+const AZURE_ENDPOINT =
+  'https://google-sheets.openai.azure.com/openai/deployments/';
 
 /**
  * Custom Google Sheets function to call Azure's OpenAI endpoint.
@@ -12,26 +13,28 @@ const AZURE_ENDPOINT = 'https://google-sheets.openai.azure.com/openai/deployment
  * @return The response from OpenAI.
  * @customfunction
  */
-function AZURE(prompt, temperature=0.1) {
+function AZURE(prompt, temperature = 0.1) {
+  if (prompt === 'Skip' || !prompt) {
+    return '';
+  }
+
   const params = {
-    method: "post",
-    contentType: "application/json",
+    method: 'post',
+    contentType: 'application/json',
     headers: {
-      "Content-Type": "application/json",
-      "api-key": AZURE_API_KEY
+      'Content-Type': 'application/json',
+      'api-key': AZURE_API_KEY,
     },
     muteHttpExceptions: true,
     payload: JSON.stringify({
-      messages: [
-        { role: "system", content: prompt }
-      ],
+      messages: [{ role: 'system', content: prompt }],
       max_tokens: 1200,
       temperature: temperature,
       frequency_penalty: 0,
       presence_penalty: 0,
       top_p: 0.95,
-      stop: null
-    })
+      stop: null,
+    }),
   };
 
   const json = fetchWithExponentialBackoff(AZURE_ENDPOINT, params);
@@ -41,8 +44,8 @@ function AZURE(prompt, temperature=0.1) {
 // Replace YOUR_API_KEY with your actual Azure OpenAI API key
 const AZURE_35_API_KEY = '';
 // Azure OpenAI endpoint for your specific deployment
-const AZURE_35_ENDPOINT = 'https://google-sheets.openai.azure.com/openai/deployments';
-
+const AZURE_35_ENDPOINT =
+  'https://google-sheets.openai.azure.com/openai/deployments';
 
 /**
  * Custom Google Sheets function to call Azure's OpenAI endpoint with gpt-3.5.
@@ -51,26 +54,28 @@ const AZURE_35_ENDPOINT = 'https://google-sheets.openai.azure.com/openai/deploym
  * @return The response from OpenAI.
  * @customfunction
  */
-function AZURE_35(prompt, temperature=0.1) {
+function AZURE_35(prompt, temperature = 0.1) {
+  if (prompt === 'Skip' || !prompt) {
+    return '';
+  }
+
   const params = {
-    method: "post",
-    contentType: "application/json",
+    method: 'post',
+    contentType: 'application/json',
     headers: {
-      "Content-Type": "application/json",
-      "api-key": AZURE_35_API_KEY
+      'Content-Type': 'application/json',
+      'api-key': AZURE_35_API_KEY,
     },
     muteHttpExceptions: true,
     payload: JSON.stringify({
-      messages: [
-        { role: "system", content: prompt }
-      ],
+      messages: [{ role: 'system', content: prompt }],
       max_tokens: 1200,
       temperature: temperature,
       frequency_penalty: 0,
       presence_penalty: 0,
       top_p: 0.95,
-      stop: null
-    })
+      stop: null,
+    }),
   };
 
   const json = fetchWithExponentialBackoff(AZURE_35_ENDPOINT, params);

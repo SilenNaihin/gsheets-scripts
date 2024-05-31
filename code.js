@@ -43,6 +43,10 @@ const OPENAI_API_KEY = 'sk-';
  * @customfunction
  */
 function GPT(prompt, model = 'gpt-4o') {
+  if (prompt === 'Skip' || !prompt) {
+    return '';
+  }
+
   const url = 'https://api.openai.com/v1/chat/completions';
 
   const params = {
