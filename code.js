@@ -1,11 +1,11 @@
 function BatchRun() {
   /** 
    Initializes the batch processing.
-   Options: 'BatchGPT', 'BatchUrlDesc', 'BatchGoogleName'
+   Options: 'BatchGPT', 'BatchUrlDesc', 'BatchLinkedinProfile'
    * @param {number} startRow The starting row number for processing.
    * @param {number} endRow The ending row number for processing.
    * @param {string} inCol The column letter where the prompts are.
-   * (BatchGoogleName only) @param {string} inCol2 The column letter where the prompts are.
+   * (BatchLinkedinProfile only) @param {string} inCol2 The column letter where the prompts are.
    * @param {string} outCol The column letter where the results should be written.
   */
   startProcessing('BatchGPT', 7, 12, 'Q', 'R');
@@ -196,64 +196,79 @@ function UrlDescription(url) {
 }
 
 /**
- * Custom Google Sheets function to explain the search results for a name.
- * @param {string} name The name of the person.
- * @param {string} company The company the person works at. Defaults to 'their company'.
- * @return A single string summary of the person's name description based on search results.
+ * Custom Google Sheets function to summarize results from a person's LinkedIn profile.
+ * @param {string} profileUrl The LinkedIn profile URL of the person.
+ * @return A single string summary based on results.
  * @customfunction
  */
-function GoogleName(name, company) {
+function LinkedinProfile(
+  profileUrl = 'https://www.linkedin.com/in/silen-naihin/'
+) {
   var apiKey = '';
-  var searchEngineId = '';
+  var apiEndpoint = 'https://api.leadmagic.io/profile-search';
+  var payload = {
+    profile_url: profileUrl,
+  };
 
-  var url =
-    'https://www.googleapis.com/customsearch/v1?key=' +
-    apiKey +
-    '&cx=' +
-    searchEngineId +
-    '&q=' +
-    encodeURIComponent(name + ' ' + company);
+  var options = {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      'X-API-Key': apiKey, // Adjusted based on typical API key formats
+    },
+    // muteHttpExceptions: true,
+    payload: JSON.stringify(payload),
+  };
 
   try {
-    var response = UrlFetchApp.fetch(url); // Make the API request
-    var json = JSON.parse(response.getContentText());
-    console.log(json);
-    var searchResults = [];
+    var response = UrlFetchApp.fetch(apiEndpoint, options);
+    var data = JSON.parse(response.getContentText());
 
-    // Parse the search results and format them into a list of strings
-    if (json.items) {
-      json.items.forEach(function (item, index) {
-        var title = item.title;
-        var snippet = item.snippet.replace(/\n/g, ' '); // Remove newline characters from snippet
-        searchResults.push(index + 1 + '. ' + title + ' - ' + snippet);
-      });
+    // Building a summary from the profile data
+    var summary = [];
+    if (data.headline) summary.push('Headline: ' + data.headline);
+    if (data.location) summary.push('Location: ' + data.location);
+    if (data.company_industry)
+      summary.push('Industry: ' + data.company_industry);
+    if (data.company_website) summary.push('Website: ' + data.company_website);
+    if (data.about) summary.push("About (IMPORTANT): '" + data.about + "'\n");
+    if (data.experiences && data.experiences.length > 0) {
+      // Limit to the 2 most recent experiences
+      var recentExperiences = data.experiences
+        .slice(0, 2)
+        .map((exp) => {
+          var experienceDetails = `${exp.title} at ${exp.subtitle}`;
+          if (exp.caption) {
+            experienceDetails += ` (${exp.caption})`;
+          }
+          if (
+            exp.subComponents &&
+            exp.subComponents.length > 0 &&
+            exp.subComponents[0].description &&
+            exp.subComponents[0].description.length > 0
+          ) {
+            var description = exp.subComponents[0].description
+              .map((desc) => desc.text)
+              .join(' ');
+            experienceDetails += `: ${description}`;
+          }
+          return experienceDetails;
+        })
+        .join(',\n\n');
+      summary.push('Experience: ' + recentExperiences);
     }
 
-    console.log(searchResults);
+    summary = summary.join('\n');
 
-    // Combine the search results into a single string, separated by new lines
-    var resultsString = searchResults.join('\n');
+    console.log(summary);
 
-    console.log(resultsString);
-
-    const responseSummary =
-      GPT(`Please take a look at this content from a Google search "${name} ${company}", and give a short summary about this person, and a couple
-    of specific facts about them. Please focus on PERSONAL FACTS ABOUT THEMSELVES, and ignore anything related to the company - this is for a cold email so try to extract
-    information I can reference within it. 
-Search results:
-${resultsString}
-
-DO NOT mention the company (x company the work at...). DO NOT mention how to contact them (you can reach them at...) because I already know all of those.
-Be sure to look at the dates that the search results are associated with. Do not say 'recent' if a promotion happened in 2021 for example.
-Try to mention things like "this person wrote an article about xyz" or "this person enjoys to do x on their free time" or "this person joined ${company} because xyz" or other things like that which I can reference in a cold outreach email. Extract as much value as you can from the search results. 
-AVOID SAYING ANYTHING LIKE 'unfortunately there are no personal facts available about...' - just return the useful content in the response.
-DO NOT mention how many connections they have on Linkedin.
-Respond with nothing but a short single paragraph of 60 words about this person. `);
-    return responseSummary;
-  } catch (e) {
-    // Handle errors (e.g., API rate limit exceeded, network issues)
-    console.error('Error fetching search results: ' + e.toString());
-    return 'Error fetching search results. Please try again later.';
+    return summary;
+  } catch (error) {
+    const errorMsg = 'Failed to fetch profile: ' + error.toString();
+    console.log(errorMsg);
+    return '';
   }
 }
 
@@ -272,8 +287,8 @@ function startProcessing(
     case 'BatchUrlDesc':
       startUrlDescProcessing(startRow, endRow, inCol, outCol);
       break;
-    case 'BatchGoogleName':
-      startGoogleNameProcessing(startRow, endRow, inCol, inCol2, outCol);
+    case 'BatchLinkedinProfile':
+      startLinkedinProfileProcessing(startRow, endRow, inCol, inCol2, outCol);
       break;
     default:
       throw new Error('Invalid batch function selected');
