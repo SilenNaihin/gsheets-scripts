@@ -235,28 +235,60 @@ function LinkedinProfile(
     if (data.company_website) summary.push('Website: ' + data.company_website);
     if (data.about) summary.push("About (IMPORTANT): '" + data.about + "'\n");
     if (data.experiences && data.experiences.length > 0) {
-      // Limit to the 2 most recent experiences
       var recentExperiences = data.experiences
         .slice(0, 2)
-        .map((exp) => {
-          var experienceDetails = `${exp.title} at ${exp.subtitle}`;
-          if (exp.caption) {
-            experienceDetails += ` (${exp.caption})`;
-          }
+        .map((exp, index) => {
           if (
             exp.subComponents &&
             exp.subComponents.length > 0 &&
-            exp.subComponents[0].description &&
-            exp.subComponents[0].description.length > 0
+            exp.subComponents[0].hasOwnProperty('title')
           ) {
-            var description = exp.subComponents[0].description
-              .map((desc) => desc.text)
-              .join(' ');
-            experienceDetails += `: ${description}`;
+            // Handle complex job histories with multiple roles
+            var rolesDetails = exp.subComponents
+              .map((role, roleIndex) => {
+                var roleDetails = `Role ${roleIndex + 1}: ${role.title}`;
+                if (role.subtitle) {
+                  roleDetails += `, ${role.subtitle}`;
+                }
+                if (role.caption) {
+                  roleDetails += ` (${role.caption})`;
+                }
+                if (role.description && role.description.length > 0) {
+                  var descriptions = role.description
+                    .map((desc) => desc.text)
+                    .join(' ');
+                  roleDetails += `, Description: ${descriptions}`;
+                }
+                return roleDetails;
+              })
+              .join('.\n');
+            return `Work experience ${index + 1} at ${
+              exp.title
+            } \n ${rolesDetails}`;
+          } else if (exp.subComponents && exp.subComponents.length > 0) {
+            // Handle simpler job entries or single descriptions without role details
+            var experienceDetails = `Work experience ${index + 1}: ${
+              exp.title
+            }`;
+            if (exp.subtitle) {
+              experienceDetails += `, ${exp.subtitle}`;
+            }
+            if (exp.caption) {
+              experienceDetails += ` (${exp.caption})`;
+            }
+            if (
+              exp.subComponents[0].description &&
+              exp.subComponents[0].description.length > 0
+            ) {
+              var descriptionText = exp.subComponents[0].description
+                .map((desc) => desc.text)
+                .join(' ');
+              experienceDetails += `, Description: ${descriptionText}`;
+            }
+            return experienceDetails;
           }
-          return experienceDetails;
         })
-        .join(',\n\n');
+        .join(';\n\n');
       summary.push('Experience: ' + recentExperiences);
     }
 
