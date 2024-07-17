@@ -5,8 +5,8 @@ These are scripts I use in my Google sheet in order to enrich lead information a
 - Open a Google Sheets
 - Open Extensions
 - Go to Apps Script
-- Paste in the code above
-- Add your OpenAI key
+- Paste in the code
+- Add your OpenAI key and any other needed keys
 - Save
 - Run and authorize for access to external scripts (needed to run Triggers and use Google libraries)
 
@@ -21,11 +21,26 @@ These are scripts I use in my Google sheet in order to enrich lead information a
 - Description of the website contents.
 - Uses GPT, requires OpenAI key.
 
-`=GoogleName(C2,B2)`
+`=LinkedinProfile(B2)`
 
-- 'Full Name + Company Name' is the Google search.
-- Uses GPT.
-- Requires Google `apiKey` and `searchEngineId`.
+- Gets Linkedin info on a person in this format:
+
+```
+Headline: General Manager at Acme
+Location: San Francisco, California, United States
+Industry: machinery
+Website: acme.com
+About (IMPORTANT): 'I have been with Acme for...'
+Experience: Work experience 1 at Acme, Inc.
+Role 1: Director of Project Management and Field Service, Full-time (Nov 2019 - Present · 4 yrs 9 mos).
+Role 2: Project Manager (May 2011 - Present · 13 yrs 3 mos)
+Work experience 2: Senior Manager, JimBob Systems
+```
+
+How to
+
+1. Leadmagic.io -> get an API key -> paste it into apiKey
+2. Go to your GSheet -> extensions -> Apps Script -> paste the code with the API key -> click run button at the top once and allow permissions if it pops up -> `=LinkedinProfile(B2)` (B2 would have the profile in it)
 
 `=GPT("prompt", "optional-model")`
 I've added exponential backoff, but cells have a 30 second time limit so be careful with token limits.
